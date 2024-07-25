@@ -1,7 +1,6 @@
 import express from "express";
 import twilio from "twilio";
 import fs from "fs";
-import fetch from "node-fetch";
 
 const app = express();
 const port = 3100;
@@ -33,25 +32,22 @@ app.post("/ivr", async (req, res) => {
       (option) => option.digit === digits
     );
     if (selectedOption) {
-      try {
-        const response = await fetch(
-          `${config.audioBaseUrl}${selectedOption.audioId}/manifest.json`
-        );
-        const data = await response.json();
+      const response = await fetch(
+        `${config.audioBaseUrl}${selectedOption.audioId}${config.manifestFilePath}`
+      );
+      const data = await response.json();
 
-        twiml.say(data.title);
-        twiml.play(
-          `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
-        );
+      twiml.say(data.title);
+      twiml.play(
+        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
+      );
 
-        twiml.say(config.audioEndMessage);
-        gatherDigits(twiml);
-      } catch (error) {
-        console.error("Error fetching manifest:", error);
-        twiml.say(
-          "We're sorry, but there was an error processing your request."
-        );
-      }
+      twiml.say(selectedOption.message);
+      twiml.play(
+        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
+      );
+      twiml.say(config.audioEndMessage);
+      gatherDigits(twiml);
     } else {
       twiml.say(config.invalidInputMessage);
       gatherDigits(twiml);

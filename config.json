@@ -1,6 +1,7 @@
 {
   "audioBaseUrl": "https://labs.noshado.ws/sound-machine-storage/",
   "audioFilePath": "/audio.mp3",
+  "manifestFilePath": "/manifest.json",
   "welcomeMessage": "Welcome to the Sound Machine. Press any number.",
   "invalidInputMessage": "Invalid input. Please try again.",
   "audioEndMessage": "Recording over. To hear another one, press any number.",
