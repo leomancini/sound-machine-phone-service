@@ -6,7 +6,6 @@ const app = express();
 const port = 3100;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-// Read config from config.json
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 
 app.use(express.urlencoded({ extended: true }));
