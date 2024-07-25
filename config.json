@@ -1,21 +1,23 @@
 {
   "audioBaseUrl": "https://labs.noshado.ws/sound-machine-storage/",
-  "audioFilePath": ".mp3",
+  "audioFilePath": "/audio.mp3",
+  "welcomeMessage": "Welcome to the IVR system.",
+  "invalidInputMessage": "Invalid input. Please try again.",
   "options": [
     {
       "digit": "1",
       "message": "Message 1",
-      "id": "1234567890"
+      "audioId": "1234567890"
     },
     {
       "digit": "2",
       "message": "Message 2",
-      "id": "2349856734"
+      "audioId": "2349856734"
     },
     {
       "digit": "3",
       "message": "Message 3",
-      "id": "4598673247"
+      "audioId": "4598673247"
     }
   ]
 }
