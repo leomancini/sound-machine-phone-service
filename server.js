@@ -15,14 +15,32 @@ app.post("/ivr", (req, res) => {
   const twiml = new VoiceResponse();
   const digits = req.body.Digits || req.body.SpeechResult;
 
-  const handleInput = () => {
-    twiml.gather({
-      input: "dtmf speech",
-      action: "/ivr",
-      method: "POST",
-      speechTimeout: "auto",
-      speechModel: "numbers_and_commands",
-    });
+  const handleInput = (audioUrl = null) => {
+    if (audioUrl) {
+      const play = twiml.play(
+        {
+          loop: 1,
+        },
+        audioUrl
+      );
+
+      play.gather({
+        input: "dtmf speech",
+        action: "/ivr",
+        method: "POST",
+        speechTimeout: "auto",
+        speechModel: "numbers_and_commands",
+        finishOnKey: "",
+      });
+    } else {
+      twiml.gather({
+        input: "dtmf speech",
+        action: "/ivr",
+        method: "POST",
+        speechTimeout: "auto",
+        speechModel: "numbers_and_commands",
+      });
+    }
   };
 
   const processInput = (input) => {
@@ -32,13 +50,8 @@ app.post("/ivr", (req, res) => {
     );
     if (selectedOption) {
       twiml.say(selectedOption.message);
-      twiml.play(
-        {
-          loop: 1,
-        },
-        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
-      );
-      handleInput(); // Allow input after audio message
+      const audioUrl = `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`;
+      handleInput(audioUrl);
     } else {
       twiml.say(config.invalidInputMessage);
       handleInput();
