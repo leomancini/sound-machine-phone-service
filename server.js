@@ -25,6 +25,10 @@ try {
 
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/config", (req, res) => {
+  res.json(config);
+});
+
 app.post("/ivr", (req, res) => {
   const twiml = new VoiceResponse();
 
