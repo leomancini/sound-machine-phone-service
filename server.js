@@ -42,10 +42,6 @@ app.post("/ivr", async (req, res) => {
         `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
       );
 
-      twiml.say(selectedOption.message);
-      twiml.play(
-        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
-      );
       twiml.say(config.audioEndMessage);
       gatherDigits(twiml);
     } else {
