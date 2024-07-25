@@ -1,12 +1,27 @@
 import express from "express";
 import twilio from "twilio";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs/promises";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3100;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-const audioBaseUrl = "https://labs.noshado.ws/sound-machine-storage/";
-const audioFilePath = "/audio.mp3";
+let config;
+try {
+  const configFile = await fs.readFile(
+    path.join(__dirname, "config.json"),
+    "utf8"
+  );
+  config = JSON.parse(configFile);
+} catch (error) {
+  console.error("Error loading configuration:", error);
+  process.exit(1);
+}
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -16,21 +31,15 @@ app.post("/ivr", (req, res) => {
   const digits = req.body.Digits;
 
   if (digits) {
-    switch (digits) {
-      case "1":
-        twiml.play(`${audioBaseUrl}1234567890${audioFilePath}`);
-        break;
-      case "2":
-        twiml.play(`${audioBaseUrl}2349856734${audioFilePath}`);
-        break;
-      case "3":
-        twiml.play(`${audioBaseUrl}4598673247${audioFilePath}`);
-        break;
-      default:
-        twiml.say("Invalid input. Please try again.");
-        break;
+    const option = config.options.find((opt) => opt.digit === digits);
+    if (option) {
+      twiml.play(option.message);
+      twiml.play(`${config.audioBaseUrl}${option.id}${config.audioFilePath}`);
+    } else {
+      twiml.say("Invalid input. Please try again.");
     }
   } else {
+    // Initial greeting and menu options
     twiml.say("Welcome to the IVR system.");
     twiml
       .gather({
