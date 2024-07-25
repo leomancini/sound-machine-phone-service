@@ -1,7 +1,7 @@
 {
   "audioBaseUrl": "https://labs.noshado.ws/sound-machine-storage/",
   "audioFilePath": "/audio.mp3",
-  "welcomeMessage": "Welcome to the IVR system.",
+  "welcomeMessage": "Welcome to the Sound Machine. Press any number.",
   "invalidInputMessage": "Invalid input. Please try again.",
   "options": [
     {
