@@ -59,6 +59,10 @@ app.post("/ivr", async (req, res) => {
   res.send(twiml.toString());
 });
 
+app.get("/config", (req, res) => {
+  res.json(config);
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
