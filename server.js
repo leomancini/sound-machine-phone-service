@@ -15,7 +15,39 @@ app.post("/ivr", (req, res) => {
   const twiml = new VoiceResponse();
   const digits = req.body.Digits || req.body.SpeechResult;
 
-  const handleInput = () => {
+  const handleInput = (message = null, audioUrl = null) => {
+    const gather = twiml.gather({
+      input: "dtmf speech",
+      action: "/ivr",
+      method: "POST",
+      speechTimeout: "auto",
+      speechModel: "numbers_and_commands",
+      timeout: 3,
+      finishOnKey: "",
+    });
+
+    if (message) {
+      gather.say(
+        {
+          voice: "alice",
+          language: "en-US",
+          input: "speech dtmf",
+          interruptible: true,
+        },
+        message
+      );
+    }
+
+    if (audioUrl) {
+      gather.play(
+        {
+          loop: 1,
+        },
+        audioUrl
+      );
+    }
+
+    // Add a final gather to catch any input after the audio finishes
     twiml.gather({
       input: "dtmf speech",
       action: "/ivr",
@@ -31,33 +63,17 @@ app.post("/ivr", (req, res) => {
         option.digit === input || option.spokenWord === input.toLowerCase()
     );
     if (selectedOption) {
-      twiml.say(selectedOption.message);
-      twiml.play(
-        {
-          loop: 1,
-        },
-        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
-      );
-      handleInput();
+      const audioUrl = `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`;
+      handleInput(selectedOption.message, audioUrl);
     } else {
-      twiml.say(config.invalidInputMessage);
-      handleInput();
+      handleInput(config.invalidInputMessage);
     }
   };
 
   if (digits) {
     processInput(digits);
   } else {
-    twiml.say(
-      {
-        voice: "alice",
-        language: "en-US",
-        input: "speech dtmf",
-        interruptible: true,
-      },
-      config.welcomeMessage
-    );
-    handleInput();
+    handleInput(config.welcomeMessage);
   }
 
   res.type("text/xml");
