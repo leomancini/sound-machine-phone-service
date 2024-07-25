@@ -11,70 +11,42 @@ const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 
 app.use(express.urlencoded({ extended: true }));
 
+function gatherDigits(twiml) {
+  return twiml.gather({
+    input: "dtmf speech",
+    numDigits: 1,
+    timeout: 3,
+    action: "/ivr",
+    method: "POST",
+    speechTimeout: "auto",
+    speechModel: "numbers_and_commands",
+  });
+}
+
 app.post("/ivr", (req, res) => {
   const twiml = new VoiceResponse();
+
   const digits = req.body.Digits || req.body.SpeechResult;
 
-  const handleInput = (message = null, audioUrl = null) => {
-    const gather = twiml.gather({
-      input: "dtmf speech",
-      action: "/ivr",
-      method: "POST",
-      speechTimeout: "auto",
-      speechModel: "numbers_and_commands",
-      timeout: 3,
-      finishOnKey: "",
-    });
-
-    if (message) {
-      gather.say(
-        {
-          voice: "alice",
-          language: "en-US",
-          input: "speech dtmf",
-          interruptible: true,
-        },
-        message
-      );
-    }
-
-    if (audioUrl) {
-      gather.play(
-        {
-          loop: 1,
-        },
-        audioUrl
-      );
-    }
-
-    // Add a final gather to catch any input after the audio finishes
-    twiml.gather({
-      input: "dtmf speech",
-      action: "/ivr",
-      method: "POST",
-      speechTimeout: "auto",
-      speechModel: "numbers_and_commands",
-    });
-  };
-
-  const processInput = (input) => {
+  if (digits) {
     const selectedOption = config.options.find(
-      (option) =>
-        option.digit === input || option.spokenWord === input.toLowerCase()
+      (option) => option.digit === digits
     );
     if (selectedOption) {
-      const audioUrl = `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`;
-      handleInput(selectedOption.message, audioUrl);
+      twiml.say(selectedOption.message);
+      twiml.play(
+        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
+      );
     } else {
-      handleInput(config.invalidInputMessage);
+      twiml.say(config.invalidInputMessage);
+      gatherDigits(twiml);
     }
-  };
-
-  if (digits) {
-    processInput(digits);
   } else {
-    handleInput(config.welcomeMessage);
+    twiml.say(config.welcomeMessage);
+    gatherDigits(twiml);
   }
+
+  gatherDigits(twiml);
 
   res.type("text/xml");
   res.send(twiml.toString());
