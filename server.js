@@ -1,33 +1,14 @@
 import express from "express";
 import twilio from "twilio";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs/promises";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3100;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-let config;
-try {
-  const configFile = await fs.readFile(
-    path.join(__dirname, "config.json"),
-    "utf8"
-  );
-  config = JSON.parse(configFile);
-} catch (error) {
-  console.error("Error loading configuration:", error);
-  process.exit(1);
-}
+const audioBaseUrl = "https://labs.noshado.ws/sound-machine-storage/";
+const audioFilePath = "/audio.mp3";
 
 app.use(express.urlencoded({ extended: true }));
-
-app.get("/config", (req, res) => {
-  res.json(config);
-});
 
 app.post("/ivr", (req, res) => {
   const twiml = new VoiceResponse();
@@ -35,16 +16,24 @@ app.post("/ivr", (req, res) => {
   const digits = req.body.Digits;
 
   if (digits) {
-    twiml.play(digits);
-    // const option = config.options.find((opt) => opt.digit === digits);
-    // if (option) {
-    //   twiml.play(option.message);
-    //   twiml.play(`${config.audioBaseUrl}${option.id}${config.audioFilePath}`);
-    // } else {
-    //   twiml.say("Invalid input. Please try again.");
-    // }
+    switch (digits) {
+      case "1":
+        twiml.play(`Message 1`);
+        twiml.play(`${audioBaseUrl}1234567890${audioFilePath}`);
+        break;
+      case "2":
+        twiml.play(`Message 2`);
+        twiml.play(`${audioBaseUrl}2349856734${audioFilePath}`);
+        break;
+      case "3":
+        twiml.play(`Message 3`);
+        twiml.play(`${audioBaseUrl}4598673247${audioFilePath}`);
+        break;
+      default:
+        twiml.say("Invalid input. Please try again.");
+        break;
+    }
   } else {
-    // Initial greeting and menu options
     twiml.say("Welcome to the IVR system.");
     twiml
       .gather({
@@ -52,9 +41,6 @@ app.post("/ivr", (req, res) => {
         action: "/ivr",
         method: "POST",
       })
-      .say(
-        "Press 1 for the first audio, 2 for the second audio, or 3 for the third audio."
-      );
   }
 
   res.type("text/xml");
