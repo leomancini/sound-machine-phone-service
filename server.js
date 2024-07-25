@@ -35,13 +35,14 @@ app.post("/ivr", (req, res) => {
   const digits = req.body.Digits;
 
   if (digits) {
-    const option = config.options.find((opt) => opt.digit === digits);
-    if (option) {
-      twiml.play(option.message);
-      twiml.play(`${config.audioBaseUrl}${option.id}${config.audioFilePath}`);
-    } else {
-      twiml.say("Invalid input. Please try again.");
-    }
+    twiml.play(digits);
+    // const option = config.options.find((opt) => opt.digit === digits);
+    // if (option) {
+    //   twiml.play(option.message);
+    //   twiml.play(`${config.audioBaseUrl}${option.id}${config.audioFilePath}`);
+    // } else {
+    //   twiml.say("Invalid input. Please try again.");
+    // }
   } else {
     // Initial greeting and menu options
     twiml.say("Welcome to the IVR system.");
