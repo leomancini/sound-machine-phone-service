@@ -1,6 +1,7 @@
 import express from "express";
 import twilio from "twilio";
 import fs from "fs";
+import fetch from "node-fetch";
 
 const app = express();
 const port = 3100;
@@ -22,7 +23,7 @@ function gatherDigits(twiml) {
   });
 }
 
-app.post("/ivr", (req, res) => {
+app.post("/ivr", async (req, res) => {
   const twiml = new VoiceResponse();
 
   const digits = req.body.Digits || req.body.SpeechResult;
@@ -32,10 +33,25 @@ app.post("/ivr", (req, res) => {
       (option) => option.digit === digits
     );
     if (selectedOption) {
-      twiml.say(selectedOption.message);
-      twiml.play(
-        `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
-      );
+      try {
+        const response = await fetch(
+          `${config.audioBaseUrl}${selectedOption.audioId}/manifest.json`
+        );
+        const data = await response.json();
+
+        twiml.say(data.title);
+        twiml.play(
+          `${config.audioBaseUrl}${selectedOption.audioId}${config.audioFilePath}`
+        );
+
+        twiml.say(config.audioEndMessage);
+        gatherDigits(twiml);
+      } catch (error) {
+        console.error("Error fetching manifest:", error);
+        twiml.say(
+          "We're sorry, but there was an error processing your request."
+        );
+      }
     } else {
       twiml.say(config.invalidInputMessage);
       gatherDigits(twiml);

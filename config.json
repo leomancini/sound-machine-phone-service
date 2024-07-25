@@ -3,10 +3,11 @@
   "audioFilePath": "/audio.mp3",
   "welcomeMessage": "Welcome to the Sound Machine. Press any number.",
   "invalidInputMessage": "Invalid input. Please try again.",
+  "audioEndMessage": "Recording over. To hear another one, press any number.",
   "options": [
     {
       "digit": "1",
-      "message": "Message 1",
+      "message": "Zhengzhou Story Radio 1",
       "audioId": "1234567890"
     },
     {
