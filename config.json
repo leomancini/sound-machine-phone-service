@@ -1,0 +1,22 @@
+{
+  "audioBaseUrl": "https://labs.noshado.ws/sound-machine-storage/",
+  "audioFilePath": "/audio.mp3",
+  "manifestFilePath": "/manifest.json",
+  "welcomeMessage": "Welcome to the Sound Machine. Press any number.",
+  "invalidInputMessage": "Invalid input. Please try again.",
+  "audioEndMessage": "Recording over. To hear another one, press any number.",
+  "options": [
+    {
+      "digit": "1",
+      "audioId": "1234567890"
+    },
+    {
+      "digit": "2",
+      "audioId": "2349856734"
+    },
+    {
+      "digit": "3",
+      "audioId": "4598673247"
+    }
+  ]
+}
