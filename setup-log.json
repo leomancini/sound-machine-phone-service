@@ -3,7 +3,7 @@
   "service_name": "Sound Machine Phone Service",
   "domain": "https://sound-machine-phone-service.noshado.ws",
   "host": "localhost",
-  "port": "3103",
+  "port": "3105",
   "author": "leo",
   "created_on": "Tue 20 Aug 2024 10:14:25 PM EDT"
 }

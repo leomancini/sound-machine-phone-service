@@ -3,7 +3,7 @@ import twilio from "twilio";
 import fs from "fs";
 
 const app = express();
-const port = 3103;
+const port = 3105;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
